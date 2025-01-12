@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>打地鼠遊戲</title>
     <style>
+        /* 基本樣式 */
         body {
             text-align: center;
             font-family: Arial, sans-serif;
         }
+
+        /* 隱藏遊戲容器 */
         #game-container {
             display: none;
         }
+
+        /* 主選單按鈕：垂直排列 */
         #main-menu {
             display: flex;
             flex-direction: column;
@@ -19,36 +24,47 @@
             margin-top: 50px;
             gap: 10px;
         }
+
+        /* 遊戲內按鈕群組：水平排列 */
         #game-buttons {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
         }
+
+        /* 畫布樣式 */
         canvas {
             border: 2px solid black;
             background-color: #f3f3f3;
             display: block;
             margin: 20px auto;
         }
+
+        /* 按鈕樣式 */
         button {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
         }
+
+        /* 分數與時間樣式 */
         #score, #time, #misses {
             font-size: 24px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>打地鼠遊戲</h1>
 
+    <!-- 最高分數 -->
     <div id="high-scores">
         <p>簡單模式最高分：<span id="easy-high-score">0</span></p>
         <p>困難模式最高分：<span id="hard-high-score">0</span></p>
     </div>
 
+    <!-- 主選單 -->
     <div id="main-menu">
         <button onclick="startGame('easy')">簡單模式</button>
         <button onclick="startGame('hard')">困難模式</button>
@@ -56,11 +72,14 @@
         <button onclick="exitGame()">離開遊戲</button>
     </div>
 
+    <!-- 遊戲畫面 -->
     <div id="game-container">
         <canvas id="gameCanvas" width="500" height="500"></canvas>
         <div id="score">分數: 0</div>
         <div id="time">剩餘時間: 30 秒</div>
         <div id="misses">失誤次數: 0</div>
+
+        <!-- 水平排列的遊戲按鈕 -->
         <div id="game-buttons">
             <button onclick="restartGame()">重新開始</button>
             <button onclick="goBack()">回上一個畫面</button>
@@ -68,6 +87,7 @@
         </div>
     </div>
 
+    <!-- 引入遊戲邏輯 -->
     <script src="script.js"></script>
 </body>
 </html>
