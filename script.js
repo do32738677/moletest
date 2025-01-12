@@ -75,6 +75,7 @@ function spawnMole() {
         ctx.drawImage(moleImage, moleX, moleY, moleSize, moleSize);
     }
 
+    // 每次地鼠生成時，確保重新設定定時器
     clearTimeout(moleTimeout);
     moleTimeout = setTimeout(spawnMole, mode === 'easy' ? 1000 : 800);
 }
@@ -102,8 +103,11 @@ canvas.addEventListener('click', (e) => {
                   clickY >= moleY && clickY <= moleY + moleSize;
 
     if (isHit) {
-        score += mode === 'special' && moleType === 2 ? 5 : 1;
-        if (mode === 'special' && moleType === 1) score = Math.max(0, score - 2);
+        if (mode === 'special') {
+            score += moleType === 2 ? 5 : moleType === 1 ? -2 : 1;
+        } else {
+            score++;
+        }
         clearTimeout(moleTimeout);
         spawnMole();
     } else {
