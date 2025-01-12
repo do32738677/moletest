@@ -4,39 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>打地鼠遊戲</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        #game-container {
-            display: none;
-        }
-        #main-menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
-            gap: 10px;
-        }
-        canvas {
-            border: 2px solid black;
-            background-color: #f3f3f3;
-            display: block;
-            margin: 20px auto;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #score, #time, #misses {
-            font-size: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>打地鼠遊戲</h1>
+
+    <div id="high-scores">
+        <p>簡單模式最高分：<span id="easy-high-score">0</span></p>
+        <p>困難模式最高分：<span id="hard-high-score">0</span></p>
+    </div>
 
     <div id="main-menu">
         <button onclick="startGame('easy')">簡單模式</button>
@@ -47,12 +23,13 @@
 
     <div id="game-container">
         <canvas id="gameCanvas" width="500" height="500"></canvas>
-        <div>
-            <p id="score">分數: 0</p>
-            <p id="time">剩餘時間: 30 秒</p>
-            <p id="misses">失誤次數: 0</p>
+        <div id="score">分數: 0</div>
+        <div id="time">剩餘時間: 30 秒</div>
+        <div id="misses">失誤次數: 0</div>
+        <div id="game-buttons">
+            <button onclick="restartGame()">重新開始</button>
+            <button onclick="goBack()">回上一個畫面</button>
         </div>
-        <button onclick="endGame()">結束遊戲</button>
     </div>
 
     <script src="script.js"></script>
