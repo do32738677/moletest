@@ -1,45 +1,65 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const scoreElement = document.getElementById('score');
+const timeElement = document.getElementById('time');
+const missesElement = document.getElementById('misses');
+const easyHighScoreElement = document.getElementById('easy-high-score');
+const hardHighScoreElement = document.getElementById('hard-high-score');
 
 let score = 0;
 let misses = 0;
 let timeRemaining = 30;
 let moleX, moleY, moleType;
 let moleSize = 50;
-let gameInterval, moleTimeout;
+let moleAppearTime = 1000;
+let gameInterval;
 let mode = 'easy';
-const maxMisses = 5;
-const highScores = {
-    easy: localStorage.getItem('easyHighScore') ? parseInt(localStorage.getItem('easyHighScore'), 10) : 0,
-    hard: localStorage.getItem('hardHighScore') ? parseInt(localStorage.getItem('hardHighScore'), 10) : 0,
-};
+let highScores = { easy: 0, hard: 0 };
+let moleTimeout;
+let maxMisses = 5;
 
 const moleImage = new Image();
-const redMoleImage = new Image();
-const goldMoleImage = new Image();
-const burrowImage = new Image();
-const backgroundImage = new Image();
+moleImage.src = 'images/mole.png';
 
-moleImage.src = './images/mole.png';
-redMoleImage.src = './images/redmole.png';
-goldMoleImage.src = './images/goldmole.png';
-burrowImage.src = './images/burrow.png';
-backgroundImage.src = './images/background.png';
+const redMoleImage = new Image();
+redMoleImage.src = 'images/redmole.png';
+
+const goldMoleImage = new Image();
+goldMoleImage.src = 'images/goldmole.png';
+
+const burrowImage = new Image();
+burrowImage.src = 'images/burrow.png';
+
+const backgroundImage = new Image();
+backgroundImage.src = 'images/background.png';
 
 const burrowPositions = [
-    { x: 100, y: 100 }, { x: 200, y: 100 }, { x: 300, y: 100 },
-    { x: 100, y: 200 }, { x: 200, y: 200 }, { x: 300, y: 200 },
-    { x: 100, y: 300 }, { x: 200, y: 300 }, { x: 300, y: 300 }
+    { x: 125, y: 125 }, { x: 225, y: 125 }, { x: 325, y: 125 },
+    { x: 125, y: 225 }, { x: 225, y: 225 }, { x: 325, y: 225 },
+    { x: 125, y: 325 }, { x: 225, y: 325 }, { x: 325, y: 325 }
 ];
+
+if (localStorage.getItem('easyHighScore')) {
+    highScores.easy = parseInt(localStorage.getItem('easyHighScore'), 10);
+    easyHighScoreElement.textContent = highScores.easy;
+}
+if (localStorage.getItem('hardHighScore')) {
+    highScores.hard = parseInt(localStorage.getItem('hardHighScore'), 10);
+    hardHighScoreElement.textContent = highScores.hard;
+}
 
 function startGame(selectedMode) {
     mode = selectedMode;
     score = 0;
     misses = 0;
     timeRemaining = 30;
-    updateUI();
+    moleAppearTime = mode === 'easy' ? 1000 : 800;
+    scoreElement.textContent = `分數: ${score}`;
+    missesElement.textContent = `失誤次數: ${misses}`;
+    timeElement.textContent = `剩餘時間: ${timeRemaining} 秒`;
     document.getElementById('main-menu').style.display = 'none';
     document.getElementById('game-container').style.display = 'block';
+
     drawBackground();
     drawBurrows();
     spawnMole();
@@ -71,27 +91,32 @@ function spawnMole() {
         moleType = Math.floor(Math.random() * moleTypes.length);
         ctx.drawImage(moleTypes[moleType], moleX, moleY, moleSize, moleSize);
     } else {
-        moleType = 0;
         ctx.drawImage(moleImage, moleX, moleY, moleSize, moleSize);
     }
 
-    // 每次地鼠生成時，確保重新設定定時器
     clearTimeout(moleTimeout);
-    moleTimeout = setTimeout(spawnMole, mode === 'easy' ? 1000 : 800);
+    moleTimeout = setTimeout(spawnMole, moleAppearTime);
 }
 
-function updateUI() {
-    document.getElementById('score').textContent = `分數: ${score}`;
-    document.getElementById('misses').textContent = `失誤次數: ${misses}`;
-    document.getElementById('time').textContent = `剩餘時間: ${timeRemaining} 秒`;
-    document.getElementById('easy-high-score').textContent = highScores.easy;
-    document.getElementById('hard-high-score').textContent = highScores.hard;
+function updateScore() {
+    if (mode === 'special') {
+        if (moleType === 0) score += 1;
+        else if (moleType === 1) score = Math.max(0, score - 2);
+        else if (moleType === 2) score += 5;
+    } else {
+        score++;
+    }
+    scoreElement.textContent = `分數: ${score}`;
 }
 
 function updateTime() {
     timeRemaining--;
-    updateUI();
-    if (timeRemaining <= 0) endGame();
+    timeElement.textContent = `剩餘時間: ${timeRemaining} 秒`;
+
+    if (timeRemaining <= 0) {
+        clearInterval(gameInterval);
+        endGame();
+    }
 }
 
 canvas.addEventListener('click', (e) => {
@@ -103,28 +128,27 @@ canvas.addEventListener('click', (e) => {
                   clickY >= moleY && clickY <= moleY + moleSize;
 
     if (isHit) {
-        if (mode === 'special') {
-            score += moleType === 2 ? 5 : moleType === 1 ? -2 : 1;
-        } else {
-            score++;
-        }
+        updateScore();
+        drawBackground();
+        drawBurrows();
         clearTimeout(moleTimeout);
         spawnMole();
     } else {
         misses++;
-        if (misses >= maxMisses) endGame();
+        missesElement.textContent = `失誤次數: ${misses}`;
+        if (misses >= maxMisses) {
+            endGame();
+        }
     }
-    updateUI();
 });
 
 function endGame() {
-    clearInterval(gameInterval);
-    clearTimeout(moleTimeout);
-
-    alert(`遊戲結束！得分: ${score}`);
+    alert(`遊戲結束！你的分數是 ${score} 分`);
     if (score > highScores[mode]) {
         highScores[mode] = score;
         localStorage.setItem(`${mode}HighScore`, score);
+        if (mode === 'easy') easyHighScoreElement.textContent = highScores.easy;
+        else if (mode === 'hard') hardHighScoreElement.textContent = highScores.hard;
     }
     goBack();
 }
@@ -134,12 +158,16 @@ function restartGame() {
 }
 
 function goBack() {
+    clearInterval(gameInterval);
+    clearTimeout(moleTimeout);
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('main-menu').style.display = 'flex';
 }
 
 function exitGame() {
-    if (confirm('您確定要離開遊戲嗎？')) {
+    if (confirm('確定要離開遊戲嗎？')) {
         window.close();
+    } else {
+        alert('請允許關閉此頁面或手動退出');
     }
 }
