@@ -8,8 +8,8 @@ let moleX, moleY, moleType;
 let moleSize = 50;
 let gameInterval, moleTimeout;
 let mode = 'easy';
-let highScores = { easy: 0, hard: 0 };
 const maxMisses = 5;
+const highScores = { easy: 0, hard: 0 };
 
 const moleImage = new Image();
 const redMoleImage = new Image();
@@ -26,7 +26,7 @@ backgroundImage.src = './images/background.png';
 const burrowPositions = [
     { x: 100, y: 100 }, { x: 200, y: 100 }, { x: 300, y: 100 },
     { x: 100, y: 200 }, { x: 200, y: 200 }, { x: 300, y: 200 },
-    { x: 100, y: 300 }, { x: 200, y: 300 }, { x: 300, y: 300 },
+    { x: 100, y: 300 }, { x: 200, y: 300 }, { x: 300, y: 300 }
 ];
 
 function startGame(selectedMode) {
@@ -34,9 +34,9 @@ function startGame(selectedMode) {
     score = 0;
     misses = 0;
     timeRemaining = 30;
+    updateUI();
     document.getElementById('main-menu').style.display = 'none';
     document.getElementById('game-container').style.display = 'block';
-    updateUI();
     drawBackground();
     drawBurrows();
     spawnMole();
@@ -55,8 +55,10 @@ function drawBurrows() {
 
 function spawnMole() {
     if (timeRemaining <= 0) return;
+
     drawBackground();
     drawBurrows();
+
     const randomPos = burrowPositions[Math.floor(Math.random() * burrowPositions.length)];
     moleX = randomPos.x;
     moleY = randomPos.y;
@@ -89,6 +91,7 @@ canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
+
     const isHit = clickX >= moleX && clickX <= moleX + moleSize &&
                   clickY >= moleY && clickY <= moleY + moleSize;
 
@@ -124,5 +127,5 @@ function goBack() {
 }
 
 function exitGame() {
-    alert('感謝遊玩！請手動關閉視窗。');
+    window.close();
 }
