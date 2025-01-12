@@ -4,23 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>打地鼠遊戲</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            display: none;
+        }
+        #main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            gap: 10px;
+        }
+        #game-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        canvas {
+            border: 2px solid black;
+            background-color: #f3f3f3;
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #score, #time, #misses {
+            font-size: 24px;
+        }
+    </style>
 </head>
 <body>
     <h1>打地鼠遊戲</h1>
-
     <div id="high-scores">
         <p>簡單模式最高分：<span id="easy-high-score">0</span></p>
         <p>困難模式最高分：<span id="hard-high-score">0</span></p>
     </div>
-
     <div id="main-menu">
         <button onclick="startGame('easy')">簡單模式</button>
         <button onclick="startGame('hard')">困難模式</button>
         <button onclick="startGame('special')">特殊模式</button>
         <button onclick="exitGame()">離開遊戲</button>
     </div>
-
     <div id="game-container">
         <canvas id="gameCanvas" width="500" height="500"></canvas>
         <div id="score">分數: 0</div>
@@ -31,7 +63,6 @@
             <button onclick="goBack()">回上一個畫面</button>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
