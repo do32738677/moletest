@@ -8,10 +8,14 @@ const gameContainer = document.getElementById('game-container');
 
 // 遊戲狀態變數
 let score = 0;
-let timeRemaining = 30; // 統一時間為 30 秒
+let timeRemaining = 30;
 let moleX, moleY;
 const moleSize = 50;
 let timerInterval;
+
+// 地鼠圖片
+const moleImage = new Image();
+moleImage.src = './images/mole.png'; // 地鼠圖片
 
 // 開始遊戲
 function startGame(mode) {
@@ -21,7 +25,7 @@ function startGame(mode) {
 
     // 初始化分數與時間
     score = 0;
-    timeRemaining = 30; // 不論模式，時間固定為 30 秒
+    timeRemaining = 30; // 統一遊戲時間為 30 秒
     updateScoreAndTime();
 
     // 開始計時與刷新地鼠
@@ -76,11 +80,7 @@ function spawnMole() {
 // 畫地鼠
 function drawMole() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const img = new Image();
-    img.src = './images/mole.png'; // 使用地鼠圖片
-    img.onload = () => {
-        ctx.drawImage(img, moleX, moleY, moleSize, moleSize);
-    };
+    ctx.drawImage(moleImage, moleX, moleY, moleSize, moleSize);
 }
 
 // 點擊事件判定
