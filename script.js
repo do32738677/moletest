@@ -60,10 +60,12 @@ function startGame(selectedMode) {
     document.getElementById('main-menu').style.display = 'none';
     document.getElementById('game-container').style.display = 'block';
 
+    clearInterval(gameInterval); // 確保遊戲倒數邏輯不重複
+    clearTimeout(moleTimeout); // 確保地鼠生成不重複
     drawBackground();
     drawBurrows();
-    spawnMole();
-    gameInterval = setInterval(updateTime, 1000);
+    spawnMole(); // 生成地鼠
+    gameInterval = setInterval(updateTime, 1000); // 每秒更新時間
 }
 
 function drawBackground() {
@@ -77,7 +79,7 @@ function drawBurrows() {
 }
 
 function spawnMole() {
-    if (timeRemaining <= 0) return;
+    if (timeRemaining <= 0) return; // 確保遊戲時間結束時停止生成地鼠
 
     drawBackground();
     drawBurrows();
@@ -94,8 +96,8 @@ function spawnMole() {
         ctx.drawImage(moleImage, moleX, moleY, moleSize, moleSize);
     }
 
-    clearTimeout(moleTimeout);
-    moleTimeout = setTimeout(spawnMole, moleAppearTime);
+    clearTimeout(moleTimeout); // 清理前一個地鼠計時器，防止疊加
+    moleTimeout = setTimeout(spawnMole, moleAppearTime); // 根據模式時間生成地鼠
 }
 
 function updateScore() {
@@ -114,7 +116,8 @@ function updateTime() {
     timeElement.textContent = `剩餘時間: ${timeRemaining} 秒`;
 
     if (timeRemaining <= 0) {
-        clearInterval(gameInterval);
+        clearInterval(gameInterval); // 停止倒數
+        clearTimeout(moleTimeout); // 停止地鼠生成
         endGame();
     }
 }
