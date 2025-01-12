@@ -1,138 +1,71 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const scoreElement = document.getElementById('score');
-const timeElement = document.getElementById('time');
-const missesElement = document.getElementById('misses');
+let score = 0, misses = 0, timeRemaining = 30, moleX, moleY, moleType;
+let moleSize = 50, gameInterval, moleTimeout, mode = 'easy';
+let highScores = { easy: 0, hard: 0 };
+const maxMisses = 5;
 
-let score = 0;
-let misses = 0;
-let timeRemaining = 30;
-let gameInterval;
-let moleTimeout;
-let mode = 'easy';
-let moleX, moleY, moleType;
+const moleImage = new Image();
+const redMoleImage = new Image();
+const goldMoleImage = new Image();
+const burrowImage = new Image();
+const backgroundImage = new Image();
 
-const moleSize = 50;
+moleImage.src = './images/mole.png';
+redMoleImage.src = './images/redmole.png';
+goldMoleImage.src = './images/goldmole.png';
+burrowImage.src = './images/burrow.png';
+backgroundImage.src = './images/background.png';
+
 const burrowPositions = [
-    { x: 100, y: 100 },
-    { x: 200, y: 100 },
-    { x: 300, y: 100 },
-    { x: 100, y: 200 },
-    { x: 200, y: 200 },
-    { x: 300, y: 200 },
-    { x: 100, y: 300 },
-    { x: 200, y: 300 },
-    { x: 300, y: 300 },
+    { x: 100, y: 100 }, { x: 200, y: 100 }, { x: 300, y: 100 },
+    { x: 100, y: 200 }, { x: 200, y: 200 }, { x: 300, y: 200 },
+    { x: 100, y: 300 }, { x: 200, y: 300 }, { x: 300, y: 300 }
 ];
 
-// 載入圖片
-const moleImage = new Image();
-moleImage.src = 'images/mole.png';
-
-const redMoleImage = new Image();
-redMoleImage.src = 'images/redmole.png';
-
-const goldMoleImage = new Image();
-goldMoleImage.src = 'images/goldmole.png';
-
-const burrowImage = new Image();
-burrowImage.src = 'images/burrow.png';
-
-function startGame(selectedMode) {
-    mode = selectedMode;
-    score = 0;
-    misses = 0;
-    timeRemaining = 30;
-    moleType = 0;
-
-    scoreElement.textContent = `分數: ${score}`;
-    missesElement.textContent = `失誤次數: ${misses}`;
-    timeElement.textContent = `剩餘時間: ${timeRemaining} 秒`;
-
-    document.getElementById('main-menu').style.display = 'none';
-    document.getElementById('game-container').style.display = 'block';
-
-    drawBackground();
-    spawnMole();
-    gameInterval = setInterval(updateTime, 1000);
-}
-
 function drawBackground() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    burrowPositions.forEach((pos) => {
-        ctx.drawImage(burrowImage, pos.x, pos.y, moleSize, moleSize);
-    });
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    burrowPositions.forEach(pos => ctx.drawImage(burrowImage, pos.x, pos.y, moleSize, moleSize));
 }
 
 function spawnMole() {
     if (timeRemaining <= 0) return;
-
-    const randomIndex = Math.floor(Math.random() * burrowPositions.length);
-    const position = burrowPositions[randomIndex];
-    moleX = position.x;
-    moleY = position.y;
-
     drawBackground();
 
+    const randomPos = burrowPositions[Math.floor(Math.random() * burrowPositions.length)];
+    moleX = randomPos.x;
+    moleY = randomPos.y;
+
     if (mode === 'special') {
-        const moleImages = [moleImage, redMoleImage, goldMoleImage];
-        moleType = Math.floor(Math.random() * moleImages.length);
-        ctx.drawImage(moleImages[moleType], moleX, moleY, moleSize, moleSize);
+        const moleTypes = [moleImage, redMoleImage, goldMoleImage];
+        moleType = Math.floor(Math.random() * moleTypes.length);
+        ctx.drawImage(moleTypes[moleType], moleX, moleY, moleSize, moleSize);
     } else {
         moleType = 0;
         ctx.drawImage(moleImage, moleX, moleY, moleSize, moleSize);
     }
 
+    clearTimeout(moleTimeout);
     moleTimeout = setTimeout(spawnMole, mode === 'easy' ? 1000 : 800);
 }
 
 function updateScore() {
-    if (mode === 'special') {
-        if (moleType === 0) score += 1;
-        if (moleType === 1) score = Math.max(0, score - 2);
-        if (moleType === 2) score += 5;
-    } else {
-        score += 1;
-    }
-    scoreElement.textContent = `分數: ${score}`;
+    score += (moleType === 2 ? 5 : 1);
+    document.getElementById('score').textContent = `分數: ${score}`;
 }
 
 function updateTime() {
     timeRemaining--;
-    timeElement.textContent = `剩餘時間: ${timeRemaining} 秒`;
-    if (timeRemaining <= 0) {
-        clearInterval(gameInterval);
-        endGame();
-    }
+    document.getElementById('time').textContent = `剩餘時間: ${timeRemaining} 秒`;
+    if (timeRemaining <= 0) endGame();
 }
 
-canvas.addEventListener('click', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const clickY = event.clientY - rect.top;
-
-    const isHit = clickX >= moleX && clickX <= moleX + moleSize &&
-                  clickY >= moleY && clickY <= moleY + moleSize;
-
-    if (isHit) {
-        updateScore();
-        clearTimeout(moleTimeout);
-        spawnMole();
-    } else {
-        misses += 1;
-        missesElement.textContent = `失誤次數: ${misses}`;
-    }
-});
-
 function endGame() {
-    clearInterval(gameInterval);
-    clearTimeout(moleTimeout);
-    alert(`遊戲結束！你的分數是 ${score}`);
-    document.getElementById('game-container').style.display = 'none';
-    document.getElementById('main-menu').style.display = 'flex';
+    alert(`遊戲結束！得分: ${score}`);
+    goBack();
 }
 
 function exitGame() {
-    window.close(); // 嘗試直接關閉頁面
+    alert('感謝遊玩！請手動關閉視窗。');
 }
