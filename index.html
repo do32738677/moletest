@@ -6,49 +6,45 @@
     <title>打地鼠遊戲</title>
     <style>
         body {
-            text-align: center;
-            font-family: Arial, sans-serif;
+            text-align: center; /* 文字置中 */
+            font-family: Arial, sans-serif; /* 使用簡單字體 */
         }
         #game-container {
-            display: none;
+            display: none; /* 遊戲畫面預設隱藏 */
         }
         #main-menu {
-            display: flex;
+            display: flex; /* 主選單按鈕橫向排列 */
             flex-direction: column;
             align-items: center;
             margin-top: 50px;
-            gap: 10px;
-        }
-        #game-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 10px; /* 按鈕間距 */
         }
         canvas {
-            border: 2px solid black;
-            background-color: #f3f3f3;
+            border: 2px solid black; /* 畫布加黑框 */
+            background-color: #f3f3f3; /* 畫布底色 */
             display: block;
-            margin: 20px auto;
+            margin: 20px auto; /* 自動置中 */
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
+            padding: 10px 20px; /* 調整按鈕大小 */
+            font-size: 16px; /* 調整文字大小 */
+            cursor: pointer; /* 滑鼠變小手 */
         }
         #score, #time, #misses {
-            font-size: 24px;
+            font-size: 24px; /* 顯示遊戲資訊大一點 */
         }
     </style>
 </head>
 <body>
     <h1>打地鼠遊戲</h1>
 
+    <!-- 顯示高分 -->
     <div id="high-scores">
         <p>簡單模式最高分：<span id="easy-high-score">0</span></p>
         <p>困難模式最高分：<span id="hard-high-score">0</span></p>
     </div>
 
+    <!-- 主選單 -->
     <div id="main-menu">
         <button onclick="startGame('easy')">簡單模式</button>
         <button onclick="startGame('hard')">困難模式</button>
@@ -56,6 +52,7 @@
         <button onclick="exitGame()">離開遊戲</button>
     </div>
 
+    <!-- 遊戲畫面 -->
     <div id="game-container">
         <canvas id="gameCanvas" width="500" height="500"></canvas>
         <div id="score">分數: 0</div>
@@ -68,7 +65,7 @@
         </div>
     </div>
 
-    <!-- 引入遊戲邏輯的 JavaScript 檔案 -->
+    <!-- 連結 JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
