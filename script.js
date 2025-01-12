@@ -9,7 +9,10 @@ let moleSize = 50;
 let gameInterval, moleTimeout;
 let mode = 'easy';
 const maxMisses = 5;
-const highScores = { easy: 0, hard: 0 };
+const highScores = {
+    easy: localStorage.getItem('easyHighScore') ? parseInt(localStorage.getItem('easyHighScore'), 10) : 0,
+    hard: localStorage.getItem('hardHighScore') ? parseInt(localStorage.getItem('hardHighScore'), 10) : 0,
+};
 
 const moleImage = new Image();
 const redMoleImage = new Image();
@@ -68,6 +71,7 @@ function spawnMole() {
         moleType = Math.floor(Math.random() * moleTypes.length);
         ctx.drawImage(moleTypes[moleType], moleX, moleY, moleSize, moleSize);
     } else {
+        moleType = 0;
         ctx.drawImage(moleImage, moleX, moleY, moleSize, moleSize);
     }
 
@@ -79,6 +83,8 @@ function updateUI() {
     document.getElementById('score').textContent = `分數: ${score}`;
     document.getElementById('misses').textContent = `失誤次數: ${misses}`;
     document.getElementById('time').textContent = `剩餘時間: ${timeRemaining} 秒`;
+    document.getElementById('easy-high-score').textContent = highScores.easy;
+    document.getElementById('hard-high-score').textContent = highScores.hard;
 }
 
 function updateTime() {
@@ -96,11 +102,8 @@ canvas.addEventListener('click', (e) => {
                   clickY >= moleY && clickY <= moleY + moleSize;
 
     if (isHit) {
-        if (mode === 'special') {
-            score += moleType === 2 ? 5 : moleType === 1 ? -2 : 1;
-        } else {
-            score++;
-        }
+        score += mode === 'special' && moleType === 2 ? 5 : 1;
+        if (mode === 'special' && moleType === 1) score = Math.max(0, score - 2);
         clearTimeout(moleTimeout);
         spawnMole();
     } else {
@@ -112,6 +115,10 @@ canvas.addEventListener('click', (e) => {
 
 function endGame() {
     alert(`遊戲結束！得分: ${score}`);
+    if (score > highScores[mode]) {
+        highScores[mode] = score;
+        localStorage.setItem(`${mode}HighScore`, score);
+    }
     clearInterval(gameInterval);
     clearTimeout(moleTimeout);
     goBack();
