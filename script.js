@@ -114,13 +114,14 @@ canvas.addEventListener('click', (e) => {
 });
 
 function endGame() {
+    clearInterval(gameInterval);
+    clearTimeout(moleTimeout);
+
     alert(`遊戲結束！得分: ${score}`);
     if (score > highScores[mode]) {
         highScores[mode] = score;
         localStorage.setItem(`${mode}HighScore`, score);
     }
-    clearInterval(gameInterval);
-    clearTimeout(moleTimeout);
     goBack();
 }
 
@@ -134,5 +135,7 @@ function goBack() {
 }
 
 function exitGame() {
-    window.close();
+    if (confirm('您確定要離開遊戲嗎？')) {
+        window.close();
+    }
 }
